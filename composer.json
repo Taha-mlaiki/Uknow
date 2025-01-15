@@ -1,0 +1,17 @@
+{
+    "name": "taha/education-platform",
+    "description": "t",
+    "autoload": {
+        "psr-4": {
+            "Classes\\": "Classes/",
+            "Models\\":"Models/"
+        }
+    },
+    "authors": [
+        {
+            "name": "taha",
+            "email": "mlaikitaha29@gmail.com"
+        }
+    ],
+    "require": {}
+}
