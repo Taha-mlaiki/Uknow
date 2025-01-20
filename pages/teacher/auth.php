@@ -2,20 +2,25 @@
 require_once "../../vendor/autoload.php";
 
 session_start();
-use Models\Teacher ;
-$role = isset($_SESSION["user"]['role_id']) ? $_SESSION["user"]['role_id'] : null;
 
-if(!$role){
+use Models\Teacher;
+
+$role = $_SESSION["user"]['role_id'] ?? null;
+
+if (!$role) {
     header("location: /uknow/pages/login.php");
     exit();
 }
+
 $user_id = $_SESSION["user"]['id'];
-if($role == 2){
-    $isActive =  Teacher::isActive($user_id);
-    if(!$isActive){
+
+if ($role == 2) {
+    $isActive = Teacher::isActive($user_id);
+    if ((int)$isActive !== 1) {
         header("location: /uknow/pages/activeAccount.php");
+        exit();
     }
-    exit();
-}else {
+} else {
     header("location: /uknow/pages/forbidden.php");
+    exit();
 }
