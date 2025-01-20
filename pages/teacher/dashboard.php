@@ -2,10 +2,12 @@
 require_once "../components/header.php";
 require_once "../../vendor/autoload.php";
 require_once "./auth.php";
+
 use Models\Teacher;
 
-    $studentCount = Teacher::getStudentsCount();
-
+$studentCount = Teacher::getStudentsCount($user_id);
+$courseCount = Teacher::courseCount($user_id);
+$recentCourses = Teacher::get3RecentCourses($user_id);
 ?>
 <?php
 require_once './components/sidebar.php';
@@ -56,7 +58,7 @@ require_once './components/sidebar.php';
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600">Total Courses</p>
-                    <h3 class="text-2xl font-bold">24</h3>
+                    <h3 class="text-2xl font-bold"><?= $courseCount ? $courseCount : 0 ?></h3>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-full">
                     <i class="fas fa-book text-blue-600"></i>
@@ -66,7 +68,7 @@ require_once './components/sidebar.php';
         <div class="bg-white p-6 rounded-lg shadow">
             <div class="flex items-center justify-between">
                 <div>
-                    <p class="text-gray-600">Active Students</p>
+                    <p class="text-gray-600">Enrolled Students</p>
                     <h3 class="text-2xl font-bold"><?= $studentCount ? $studentCount : 0 ?></h3>
                 </div>
                 <div class="bg-green-100 p-3 rounded-full">
@@ -74,28 +76,7 @@ require_once './components/sidebar.php';
                 </div>
             </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-600">Completion Rate</p>
-                    <h3 class="text-2xl font-bold">87%</h3>
-                </div>
-                <div class="bg-yellow-100 p-3 rounded-full">
-                    <i class="fas fa-chart-pie text-yellow-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-600">Average Rating</p>
-                    <h3 class="text-2xl font-bold">4.8</h3>
-                </div>
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <i class="fas fa-star text-purple-600"></i>
-                </div>
-            </div>
-        </div>
+
     </div>
 
     <!-- Recent Courses Table -->
@@ -107,70 +88,54 @@ require_once './components/sidebar.php';
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    <tr>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[200px]">
+                            Course Name
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[300px]">
+                            Description
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[150px]">
+                            Category
+                        </th>
+                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider whitespace-nowrap min-w-[200px]">
+                            Tags
+                        </th>
+                    </tr>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-200">
-                    <tr>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="bg-blue-100 p-2 rounded">
-                                    <i class="fas fa-laptop-code text-blue-600"></i>
+                    <?php foreach ($recentCourses as $course) : ?>
+                        <tr>
+                            <td class="px-6 py-4">
+                                <div class="flex items-center">
+                                    <div class="flex-shrink-0">
+                                        <img src="/uknow/assets/uploads/<?= $course->getThumbnail() ? $course->getThumbnail() : ''?> "
+                                            class="h-16 aspect-video object-cover rounded-md bg-gray-100"
+                                            alt="Course thumbnail" />
+                                    </div>
+                                    <div class="ml-4">
+                                        <div class="text-sm font-medium text-gray-900 line-clamp-2"><?= $course->getTitle() ?></div>
+                                    </div>
                                 </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Web Development Basics</div>
-                                    <div class="text-sm text-gray-500">Technology</div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-500 line-clamp-2"><?= $course->getDescription() ?></div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="text-sm text-gray-500 line-clamp-1"><?= $course->getCategoryName() ?></div>
+                            </td>
+                            <td class="px-6 py-4">
+                                <div class="flex flex-wrap gap-2 gap-1">
+                                    <?php foreach ($course->getTags() as $tag): ?>
+                                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            <?= $tag->getName() ?>
+                                        </span>
+                                    <?php endforeach ?>
                                 </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">64 Students</td>
-                        <td class="px-6 py-4">
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Active
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <button class="text-blue-600 hover:text-blue-900 mr-3"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="bg-purple-100 p-2 rounded">
-                                    <i class="fas fa-paint-brush text-purple-600"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Digital Design</div>
-                                    <div class="text-sm text-gray-500">Design</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">48 Students</td>
-                        <td class="px-6 py-4">
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                Draft
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <button class="text-blue-600 hover:text-blue-900 mr-3"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                            </td>
+                        </tr>
+                    <?php endforeach; ?>
                 </tbody>
             </table>
         </div>
@@ -179,11 +144,11 @@ require_once './components/sidebar.php';
 </div>
 <script>
     // set the target element that will be collapsed or expanded (eg. navbar menu)
-    const userMenu = document.getElementById('user-menu-button');
-    userMenu.addEventListener("click", () => {
-        document.getElementById("user-dropdown").classList.toggle("hidden")
-    })
-</script>
-<?php
-require_once "../components/footer.php";
-?>
+    const userMenu = document.getElementById(' user-menu-button');
+                                            userMenu.addEventListener("click", ()=> {
+                                        document.getElementById("user-dropdown").classList.toggle("hidden")
+                                        })
+                                        </script>
+                                        <?php
+                                        require_once "../components/footer.php";
+                                        ?>
