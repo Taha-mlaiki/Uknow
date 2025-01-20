@@ -77,7 +77,6 @@ require_once "./auth.php";
         const actionIcon = teacher.isActive ? 'fa-ban' : 'fa-check';
         const actionColor = teacher.isActive ? 'text-red-600 hover:text-red-900' : 'text-green-600 hover:text-green-900';
         const actionTitle = teacher.isActive ? 'Deactivate' : 'Activate';
-
         return `
             <tr>
                 <td class="px-6 py-4">${teacher.username}</td>
@@ -121,7 +120,6 @@ require_once "./auth.php";
                     id: teacherId,
                     status: !currentStatus
                 });
-                console.log(res);
                 if (res.data.message) {
                     showToast(res.data.message);
                     loadTeachers(); 
