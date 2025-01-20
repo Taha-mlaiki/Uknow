@@ -22,7 +22,7 @@ class Database
                 $username = self::$username;
                 $password = self::$password;
 
-                $dsn = "mysql:host={$host};dbname={$dbName}";
+                $dsn = "mysql:host={$host};port=3308;dbname={$dbName}";
                 self::$instance = new PDO($dsn, $username, $password);
             } catch (PDOException $e) {
                 die("Database connection failed: " . $e->getMessage());
