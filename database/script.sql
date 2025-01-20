@@ -47,10 +47,10 @@ CREATE TABLE course (
     FOREIGN KEY (user_id) REFERENCES users(id)
 );
 
-CREATE TABLE enrollers_course (
+CREATE TABLE enrollement (
     user_id INT,
     course_id INT,
-    PRIMARY KEY (user_id, course_id),
+    enrollment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
     FOREIGN KEY (course_id) REFERENCES course(id) ON DELETE CASCADE
 );
