@@ -15,9 +15,13 @@ class User
     public function signUp(UserClass $user)
     {
         // Ensure you're using the correct column name
-        $sql = "INSERT INTO users (username, email, password_hash, role_id) 
-                    VALUES (:username, :email, :password_hash, :role_id)";
+        $sql = "INSERT INTO users (username, email, password_hash, role_id,isActive) 
+                    VALUES (:username, :email, :password_hash, :role_id,:isActive)";
 
+        $isActive = 1;
+        if($user->getRoleId() == 2){
+            $isActive = 0;
+        }
         // Get user details
         $password = $user->getPassword();
         $username = $user->getUsername();
@@ -35,6 +39,7 @@ class User
         $stmt->bindParam(':email', $email);
         $stmt->bindParam(':password_hash', $password_hash);
         $stmt->bindParam(':role_id', $role_id);
+        $stmt->bindParam(':isActive', $isActive);
 
         // Execute the query
         $stmt->execute();
