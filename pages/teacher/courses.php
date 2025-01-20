@@ -1,10 +1,10 @@
 <?php
 require_once "../components/header.php";
+session_start();
 ?>
 <!-- Sidebar -->
 <?php
 require_once './components/sidebar.php';
-require_once "./auth.php";
 ?>
 
 <!-- Main Content -->
@@ -86,11 +86,11 @@ require_once "./auth.php";
                             </thead>
                             <tbody class="bg-white divide-y divide-gray-200" id="coursesTableBody">
                                 <!-- Example row structure -->
-                               <tr>
-                                <th colspan="5">
-                                    <p class="text-gray-900 text-center text-xl font-semibold">Loading...</p>
-                                </th>
-                               </tr>
+                                <tr>
+                                    <th colspan="5">
+                                        <p class="text-gray-900 text-center text-xl font-semibold">Loading...</p>
+                                    </th>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -214,14 +214,14 @@ require_once "./auth.php";
             if (courseToDelete) {
                 try {
                     // Replace with your actual delete API endpoint
-                    const res =  await axios.post(`/uknow/Controllers/course/delete.php`,{
-                        courseId:courseToDelete
+                    const res = await axios.post(`/uknow/Controllers/course/delete.php`, {
+                        courseId: courseToDelete
                     });
-                    if(res.data.success){
+                    if (res.data.success) {
                         showToast(res.data.success);
                         courses = courses.filter(course => course.id !== courseToDelete);
                         renderCourses();
-                    }else {
+                    } else {
                         showToast(res.data.error, 'error');
                     }
                 } catch (error) {
