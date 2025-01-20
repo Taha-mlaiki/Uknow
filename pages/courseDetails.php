@@ -2,28 +2,24 @@
 
 require_once "../vendor/autoload.php";
 
+session_start();
 use Models\Course as Course;
 
 
 require_once "./components/header.php";
 require_once "./components/navbar.php";
 $course = null;
-$userId = $_SESSION["user"]["id"];
+$userId = isset($_SESSION["user"]["id"]) ? $_SESSION["user"]["id"] : null;
 $courseId = $_GET["id"];
 if ($courseId && $userId) {
     try {
         $course = Course::getCourseDetails($courseId, $userId);
     } catch (Exception $e) {
-
         echo "<div class='container text-center my-20 mx-auto p-6 text-red-500'>Error: Unable to load course details. Please try again later.</div>";
         echo $e->getMessage();
         exit;
     }
-} else {
-    echo "<div class='container my-20 text-center mx-auto p-6 text-red-500'>Invalid course or user. Please try again.</div>";
-    exit;
 }
-
 ?>
 
 
@@ -64,7 +60,7 @@ if ($courseId && $userId) {
             </video>
         <?php elseif ($course->getDocument()) : ?>
             <div class="container">
-                <?= $course->getDocument()?>
+                <?= $course->getDocument() ?>
             </div>
         <?php endif; ?>
     <?php else : ?>
