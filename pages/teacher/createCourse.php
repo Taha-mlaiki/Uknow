@@ -263,7 +263,7 @@ $pageTitle = $isEdit ? "Edit Course: " . htmlspecialchars($course[$courseId]->ge
         thumbnailInput.addEventListener('change', (e) => {
             const file = e.target.files[0];
             if (file) {
-                if (!validateFileSize(file)) {
+                if (!validateFileSize(file,20)) {
                     showError('thumbnail', 'File size should not exceed 2MB');
                     e.target.value = '';
                     return;
