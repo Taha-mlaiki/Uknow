@@ -1,12 +1,12 @@
 <?php
-require_once "./components/header.php";
-require_once "./components/navbar.php";
-session_start();
-$userId = $_SESSION["user"]["id"];
+$userId = isset($_SESSION["user"]["id"]) ? $_SESSION["user"]["id"] : null ;
 if (!$userId) {
     header("location: /uknow/pages/forbidden.php");
     exit();
 }
+require_once "./components/header.php";
+require_once "./components/navbar.php";
+session_start();
 ?>
 <main class="my-20">
     <input type="hidden" id="userId" value="<?= $userId  ?>">
