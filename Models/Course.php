@@ -391,7 +391,7 @@ class Course
     {
         $db = Database::getConnection();
         $offset = ($page - 1) * $limit;
-        
+
         // Base query
         $sql = "SELECT 
             c.*, 
@@ -406,7 +406,7 @@ class Course
             LEFT JOIN course_tag ct ON c.id = ct.course_id 
             LEFT JOIN tag t ON ct.tag_id = t.id 
             WHERE c.isPublished = 1";
-    
+
         // Add search condition if search term is provided
         if (!empty($searchQuery)) {
             $searchTerm = "%{$searchQuery}%";
@@ -417,25 +417,25 @@ class Course
                 OR t.name LIKE :search
             )";
         }
-    
+
         // Complete the query with grouping and limits
         $sql .= " GROUP BY c.id, cat.name, u.username, u.email
                   ORDER BY c.created_at DESC 
                   LIMIT :offset, :limit";
-    
+
         // Prepare and execute the query
         $stmt = $db->prepare($sql);
-        
+
         // Bind search parameter if it exists
         if (!empty($searchQuery)) {
             $stmt->bindValue(':search', $searchTerm, PDO::PARAM_STR);
         }
-        
+
         $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
         $stmt->execute();
         $courses = $stmt->fetchAll(PDO::FETCH_ASSOC);
-    
+
         // Count total records with search
         $countSql = "SELECT COUNT(DISTINCT c.id) 
                      FROM course c
@@ -444,7 +444,7 @@ class Course
                      LEFT JOIN course_tag ct ON c.id = ct.course_id 
                      LEFT JOIN tag t ON ct.tag_id = t.id 
                      WHERE c.isPublished = 1";
-    
+
         if (!empty($searchQuery)) {
             $countSql .= " AND (
                 c.title LIKE :search 
@@ -453,17 +453,17 @@ class Course
                 OR t.name LIKE :search
             )";
         }
-    
+
         $countStmt = $db->prepare($countSql);
         if (!empty($searchQuery)) {
             $countStmt->bindValue(':search', $searchTerm, PDO::PARAM_STR);
         }
         $countStmt->execute();
         $totalRecords = $countStmt->fetchColumn();
-    
+
         // Calculate total pages
         $totalPages = ceil($totalRecords / $limit);
-    
+
         return [
             "courses" => $courses,
             "totalRecords" => $totalRecords,
@@ -472,9 +472,10 @@ class Course
         ];
     }
 
-    static public function getCourseDetails($courseId, $userId = null) {
+    static public function getCourseDetails($courseId, $userId = null)
+    {
         $db = Database::getConnection();
-    
+
         $fields = "
             c.title,
             c.description,
@@ -482,7 +483,7 @@ class Course
             cat.name AS category_name,
             u.username AS user_name,
             GROUP_CONCAT(t.name) AS tags";
-    
+
         if ($userId) {
             $enrollmentQuery = "
                 SELECT COUNT(*) AS userEnrolled 
@@ -494,14 +495,14 @@ class Course
             $stmt->bindValue(":course_id", $courseId);
             $stmt->execute();
             $isEnrolled = $stmt->fetchColumn() > 0;
-    
+
             if ($isEnrolled) {
                 $fields .= ",
                     c.video AS course_video,
                     c.document AS course_document";
             }
         }
-    
+
         $sql = "
             SELECT $fields
             FROM course c
@@ -512,16 +513,16 @@ class Course
             WHERE c.id = :id
             GROUP BY c.id
         ";
-    
+
         $stmt = $db->prepare($sql);
         $stmt->bindValue(":id", $courseId);
         $stmt->execute();
         $result = $stmt->fetch(PDO::FETCH_ASSOC);
-    
+
         if (!$result) {
             throw new \Exception("Course not found");
         }
-    
+
 
         $tags = [];
         if (!empty($result["tags"])) {
@@ -529,8 +530,8 @@ class Course
                 $tags[] = new TagClass(0, trim($tag));
             }
         }
-    
-       
+
+
         return new CourseClass(
             $result["course_id"],
             $result["title"],
@@ -546,5 +547,40 @@ class Course
             $result["user_name"],
             ""
         );
+    }
+
+    public static function countCourses()
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(*) FROM course");
+        $stmt->execute();
+        $result = $stmt->fetchColumn();
+        return $result;
+    }
+    public static function courseDistribution()
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT COUNT(c.id) AS course_count,cat.name AS category_name
+                FROM course c  JOIN category cat  ON c.category_id = cat.id
+                GROUP BY cat.id
+                ORDER BY course_count DESC ");
+        $stmt->execute();
+        $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        return $result;
+    }
+
+    public static function getBest3Courses()
+    {
+        $db = Database::getConnection();
+        $stmt = $db->prepare("SELECT c.*, COUNT(e.user_id) AS enrolled_users
+        FROM course c
+        JOIN enrollement e ON e.course_id = c.id
+        GROUP BY c.id
+        ORDER BY enrolled_users DESC
+        LIMIT 3
+         ");
+         $stmt->execute();
+         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         return $result;
     }
 }
