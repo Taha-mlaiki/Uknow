@@ -23,11 +23,6 @@
             <i class="fas fa-gauge-high"></i>
             <span>Dashboard</span>
         </a>
-        <a href="/uknow/pages/admin/courses.php"
-            class="flex items-center space-x-2 p-3 rounded-lg <?php echo strpos($currentPage, '/uknow/pages/admin/courses.php') !== false ? 'bg-gray-800' : 'hover:bg-gray-800'; ?>">
-            <i class="fas fa-book"></i>
-            <span>Courses</span>
-        </a>
         <a href="/uknow/pages/admin/students.php"
             class="flex items-center space-x-2 p-3 rounded-lg <?php echo strpos($currentPage, '/uknow/pages/admin/students.php') !== false ? 'bg-gray-800' : 'hover:bg-gray-800'; ?>">
             <i class="fas fa-users"></i>
