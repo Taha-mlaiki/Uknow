@@ -1,10 +1,20 @@
 <?php
 require_once "../components/header.php";
 require_once "./auth.php";
+require_once "../../vendor/autoload.php";
+
+use Models\Course;
+use Models\Student;
+
+$coursesCount = Course::countCourses();
+$courseDistribution = Course::courseDistribution();
+$best3Courses = Course::getBest3Courses();
+$best3Students = Student::best3Students();
+
 ?>
 <!-- Sidebar -->
 <?php
-    require_once './components/sidebar.php'
+require_once './components/sidebar.php'
 ?>
 
 <!-- Main Content -->
@@ -47,126 +57,62 @@ require_once "./auth.php";
             <div class="flex items-center justify-between">
                 <div>
                     <p class="text-gray-600">Total Courses</p>
-                    <h3 class="text-2xl font-bold">24</h3>
+                    <h3 class="text-2xl font-bold"><?= $coursesCount ?></h3>
                 </div>
                 <div class="bg-blue-100 p-3 rounded-full">
                     <i class="fas fa-book text-blue-600"></i>
                 </div>
             </div>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-600">Active Students</p>
-                    <h3 class="text-2xl font-bold">512</h3>
+
+    </div>
+    <div class="grid lg:grid-cols-2 max-h-[500px] overflow-y-auto gap-10">
+        <div class="bg-white rounded-lg p-5">
+            <h1 class="font-bold text-xl text-blue-700 mb-5">Courses distribution by category</h1>
+            <?php foreach ($courseDistribution as $category) : ?>
+                <div class="flex my-4 items-center justify-between">
+                    <span class="font-bold text-md"><?= $category["category_name"] ?></span>
+                    <span class="font-bold text-lg text-neutral-700"><?= $category["course_count"] ?></span>
                 </div>
-                <div class="bg-green-100 p-3 rounded-full">
-                    <i class="fas fa-users text-green-600"></i>
-                </div>
-            </div>
+
+            <?php endforeach; ?>
         </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-600">Completion Rate</p>
-                    <h3 class="text-2xl font-bold">87%</h3>
+        <div class="bg-white rounded-lg  p-5">
+            <h1 class="font-bold text-xl text-blue-700 mb-5">Best 3 courses</h1>
+            <?php foreach ($best3Courses as $course) : ?>
+                <div class="flex my-4 items-center justify-between">
+                    <span class="font-bold text-md"><?= $course["title"] ?></span>
+                    <span class="font-bold text-lg text-neutral-700"><?= $course["enrolled_users"] ?></span>
                 </div>
-                <div class="bg-yellow-100 p-3 rounded-full">
-                    <i class="fas fa-chart-pie text-yellow-600"></i>
-                </div>
-            </div>
-        </div>
-        <div class="bg-white p-6 rounded-lg shadow">
-            <div class="flex items-center justify-between">
-                <div>
-                    <p class="text-gray-600">Average Rating</p>
-                    <h3 class="text-2xl font-bold">4.8</h3>
-                </div>
-                <div class="bg-purple-100 p-3 rounded-full">
-                    <i class="fas fa-star text-purple-600"></i>
-                </div>
-            </div>
+            <?php endforeach; ?>
         </div>
     </div>
-
-    <!-- Recent Courses Table -->
-    <div class="bg-white rounded-lg shadow mb-8">
+    <!-- Students Table -->
+    <div class="bg-white rounded-lg shadow my-8">
         <div class="p-6 border-b border-gray-200">
-            <h2 class="text-lg font-semibold">Recent Courses</h2>
+            <h2 class="text-lg font-semibold">All Students</h2>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead class="bg-gray-50">
                     <tr>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Course Name</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Students</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Progress</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Student Name</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Courses enrolled</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-200" id="studentsList">
+                    <?php foreach($best3Students as $student) :?>
                     <tr>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="bg-blue-100 p-2 rounded">
-                                    <i class="fas fa-laptop-code text-blue-600"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Web Development Basics</div>
-                                    <div class="text-sm text-gray-500">Technology</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">64 Students</td>
-                        <td class="px-6 py-4">
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-600 h-2 rounded-full" style="width: 75%"></div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                Active
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <button class="text-blue-600 hover:text-blue-900 mr-3"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
-                        </td>
+                        <td class="px-6 py-4"><?= $student["username"] ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-500"><?= $student["email"] ?></td>
+                        <td class="px-6 py-4 text-sm text-gray-500"><?= $student["enrolled_courses"] ?></td>
                     </tr>
-                    <tr>
-                        <td class="px-6 py-4">
-                            <div class="flex items-center">
-                                <div class="bg-purple-100 p-2 rounded">
-                                    <i class="fas fa-paint-brush text-purple-600"></i>
-                                </div>
-                                <div class="ml-4">
-                                    <div class="text-sm font-medium text-gray-900">Digital Design</div>
-                                    <div class="text-sm text-gray-500">Design</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4 text-sm text-gray-500">48 Students</td>
-                        <td class="px-6 py-4">
-                            <div class="w-full bg-gray-200 rounded-full h-2">
-                                <div class="bg-blue-600 h-2 rounded-full" style="width: 45%"></div>
-                            </div>
-                        </td>
-                        <td class="px-6 py-4">
-                            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                Draft
-                            </span>
-                        </td>
-                        <td class="px-6 py-4 text-sm">
-                            <button class="text-blue-600 hover:text-blue-900 mr-3"><i class="fas fa-edit"></i></button>
-                            <button class="text-red-600 hover:text-red-900"><i class="fas fa-trash"></i></button>
-                        </td>
-                    </tr>
+                    <?php endforeach ;?>
                 </tbody>
             </table>
         </div>
     </div>
-
 </div>
 <script>
     // set the target element that will be collapsed or expanded (eg. navbar menu)
