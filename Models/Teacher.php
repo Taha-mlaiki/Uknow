@@ -167,4 +167,6 @@ class Teacher implements isActive
         $result = $stmt->fetchColumn();
         return $result;
     }
+
+   
 }
