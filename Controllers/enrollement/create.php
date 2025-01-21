@@ -6,28 +6,40 @@ use Models\Student;
 use Classes\Enrollment as EnrollmentClass;
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $userId = isset($_POST["userId"]) ? $_POST["userId"] : null;
-    $courseId =  isset($_POST["courseId"]) ? $_POST["courseId"] : null;
-    if (!is_numeric($courseId) || !is_numeric($userId)) {
-        echo "Id is not numberic";
+    $userId = $_POST["userId"] ?? null;
+    $courseId = $_POST["courseId"] ?? null;
+
+    if (!$userId) {
+        header("location: /uknow/pages/login.php");
         exit();
     }
 
-    $userActive = Student::isActive($userId);
-    if(!$userActive){
-        header("location : /uknow/pages/activeAccount.php");
+    if (!is_numeric($courseId)) {
+        header("location: /uknow/pages/");
+        exit();
+    }
+
+    $userActive = Student::isActive($userId);  
+    if (!$userActive) {
+        header("location: /uknow/pages/activeAccount.php");
         exit();
     }
 
     try {
-
         $newEnrollement = new EnrollmentClass($userId, $courseId, "");
         $insertdEnrollement = new Enrollment();
+
         if ($insertdEnrollement->createEnrollment($newEnrollement)) {
             header("location: /uknow/pages/courseDetails.php?id=$courseId");
+            exit();
+        } else {
+            header("location: /uknow/pages/");
+            exit();
         }
     } catch (\Throwable $th) {
-        echo $th->getMessage();
+        error_log($th->getMessage()); 
+        header("location: /uknow/pages/");
         exit();
     }
 }
+
