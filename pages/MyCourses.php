@@ -4,7 +4,7 @@ require_once "./components/navbar.php";
 session_start();
 $userId = isset($_SESSION["user"]["id"]) ? $_SESSION["user"]["id"] : null ;
 if (!$userId) {
-    header("location: /uknow/pages/forbidden.php");
+    header("location: /uknow/pages/login.php");
     exit();
 }
 
