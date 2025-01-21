@@ -110,7 +110,7 @@ require_once './components/sidebar.php';
                             <td class="px-6 py-4">
                                 <div class="flex items-center">
                                     <div class="flex-shrink-0">
-                                        <img src="/uknow/assets/uploads/<?= $course->getThumbnail() ? $course->getThumbnail() : ''?> "
+                                        <img src="/uknow/assets/uploads/<?= $course->getThumbnail() ? $course->getThumbnail() : '' ?> "
                                             class="h-16 aspect-video object-cover rounded-md bg-gray-100"
                                             alt="Course thumbnail" />
                                     </div>
@@ -145,10 +145,10 @@ require_once './components/sidebar.php';
 <script>
     // set the target element that will be collapsed or expanded (eg. navbar menu)
     const userMenu = document.getElementById(' user-menu-button');
-                                            userMenu.addEventListener("click", ()=> {
-                                        document.getElementById("user-dropdown").classList.toggle("hidden")
-                                        })
-                                        </script>
-                                        <?php
-                                        require_once "../components/footer.php";
-                                        ?>
+    userMenu.addEventListener("click", () => {
+        document.getElementById("user-dropdown").classList.toggle("hidden")
+    })
+</script>
+<?php
+require_once "../components/footer.php";
+?>
