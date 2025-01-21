@@ -4,7 +4,9 @@ namespace Models;
 
 require_once "../../helpers/userInterface.php";
 require_once "../../vendor/autoload.php";
-session_start();
+if(session_status() != PHP_SESSION_ACTIVE){
+    session_start();
+}
 use PDO;
 use Classes\User as UserClass;
 use Models\isActive;
@@ -47,5 +49,19 @@ class Student implements isActive
         $stmt->execute();
         $result = $stmt->fetchColumn();
         return $result;
+    }
+
+    public static function best3Students(){
+        $db = Database::getConnection();
+        $stmt = $db->prepare(" SELECT u.*, COUNT(e.course_id) AS enrolled_courses
+        FROM users u
+        JOIN enrollement e ON e.user_id = u.id
+        GROUP BY u.id
+        ORDER BY enrolled_courses DESC
+        LIMIT 3
+         ");
+         $stmt->execute();
+         $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+         return $result ;
     }
 }
