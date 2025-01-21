@@ -1,25 +1,31 @@
 <?php
 
 require_once "../vendor/autoload.php";
-
-session_start();
 use Models\Course as Course;
-
 
 require_once "./components/header.php";
 require_once "./components/navbar.php";
+
 $course = null;
 $userId = isset($_SESSION["user"]["id"]) ? $_SESSION["user"]["id"] : null;
-$courseId = $_GET["id"];
-if ($courseId && $userId) {
+$courseId = $_GET["id"] ?? null;
+
+if($courseId){
     try {
         $course = Course::getCourseDetails($courseId, $userId);
+        if (!$course) {
+            echo "<div class='container text-center my-20 mx-auto p-6 text-red-500'>Course not found.</div>";
+            exit;
+        }
     } catch (Exception $e) {
         echo "<div class='container text-center my-20 mx-auto p-6 text-red-500'>Error: Unable to load course details. Please try again later.</div>";
         echo $e->getMessage();
         exit;
     }
 }
+
+
+echo $course->getTitle();
 ?>
 
 
